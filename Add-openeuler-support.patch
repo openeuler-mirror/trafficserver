@@ -1,0 +1,178 @@
+diff -Nur trafficserver-9.1.0/contrib/install_trafficserver.sh trafficserver-9.1.0_1/contrib/install_trafficserver.sh
+--- trafficserver-9.1.0/contrib/install_trafficserver.sh	2021-08-06 02:46:07.000000000 +0800
++++ trafficserver-9.1.0_1/contrib/install_trafficserver.sh	2021-08-30 16:29:38.321414601 +0800
+@@ -58,6 +58,7 @@
+ 
+ SUSE="suse"
+ FEDORA="fedora"
++OPENEULER="openeuler"
+ REDHAT="redhat" # also exists on Fedora
+ UBUNTU="ubuntu"
+ DEBIAN="debian" # also exists on Ubuntu
+@@ -80,6 +81,7 @@
+         libpcre3-dev \
+         curl
+         apt-get install -y subversion git git-svn
++       
+     elif [ "$DISTRIB_ID" = "$FEDORA" ]; then
+         yum update
+         yum upgrade
+@@ -109,6 +111,35 @@
+                 pcre \
+                 pcre-devel
+         fi
++    elif [ "$DISTRIB_ID" = "$OPENEULER" ]; then
++        yum update
++        yum upgrade
++
++        # Chose not to use kernel version here as FC8 xen needs more than just eventfd work
++        if [ $USING_EC2 = $TRUE ]; then
++            yum -y install subversion \
++                git \
++                autoconf \
++                automake \
++                libtool \
++                gcc-c++ \
++                glibc-devel \
++                openssl-devel \
++                db4-devel \
++                pcre \
++                pcre-devel
++        elif [ $USING_EC2 = $FALSE ]; then
++            yum -y install subversion \
++                git \
++                autoconf \
++                automake \
++                libtool \
++                gcc-c++ \
++                glibc-devel \
++                openssl-devel \
++                pcre \
++                pcre-devel
++        fi
+     fi
+ }
+ 
+@@ -149,6 +180,8 @@
+         addgroup nobody
+     elif [ "$DISTRIB_ID" = "$FEDORA" ]; then
+         groupadd nobody
++    elif [ "$DISTRIB_ID" = "$OPENEULER" ]; then
++        groupadd nobody
+     fi
+ }
+ 
+@@ -162,6 +195,8 @@
+     if [ $USING_EC2 = $TRUE ]; then
+         if [ "$DISTRIB_ID" = "$FEDORA" ]; then
+             configureOptions="$configureOptions $BUILD_OPTIONS_FC8_EC2"
++	elif [ "$DISTRIB_ID" = "$OPENEULER" ]; then
++	    configureOptions="$configureOptions $BUILD_OPTIONS_FC8_EC2"
+         fi
+     fi
+ 
+@@ -358,6 +393,8 @@
+     DISTRIB_ID=$SUSE
+ elif [ -e /etc/fedora-release ]; then
+     DISTRIB_ID=$FEDORA
++elif [ -e /etc/openEuler-release ]; then
++    DISTRIB_ID=$OPENEULER
+ elif [ -e /etc/redhat-release ]; then
+     DISTRIB_ID=$REDHAT # also exists on Fedora
+ elif [ -e /etc/lsb-release ]; then
+diff -Nur trafficserver-9.1.0/contrib/vagrant-setup.sh trafficserver-9.1.0_1/contrib/vagrant-setup.sh
+--- trafficserver-9.1.0/contrib/vagrant-setup.sh	2021-08-06 02:46:07.000000000 +0800
++++ trafficserver-9.1.0_1/contrib/vagrant-setup.sh	2021-08-30 16:30:42.266453768 +0800
+@@ -80,6 +80,26 @@
+         make
+ ;;
+ 
++openeuler*)
++    dnf install -y \
++        autoconf \
++        automake \
++        clang \
++        flex \
++        gcc \
++        gcc-c++ \
++        hwloc-devel \
++        libcap-devel \
++        libcurl-devel \
++        libtool \
++        lua-devel \
++        m4 \
++        ncurses-devel \
++        openssl-devel \
++        pcre-devel \
++        git \
++        make
++
+ omnios)
+     export PATH=/usr/gnu/bin:/usr/bin:/usr/sbin:/sbin:/opt/gcc-4.8.1/bin
+     echo "export PATH=/usr/gnu/bin:/usr/bin:/usr/sbin:/sbin:/opt/gcc-4.8.1/bin" >> /root/.profile
+diff -Nur trafficserver-9.1.0/rc/trafficserver.in trafficserver-9.1.0_1/rc/trafficserver.in
+--- trafficserver-9.1.0/rc/trafficserver.in	2021-08-06 02:46:07.000000000 +0800
++++ trafficserver-9.1.0_1/rc/trafficserver.in	2021-08-30 16:29:17.149070530 +0800
+@@ -52,6 +52,8 @@
+     DISTRIB_ID="suse"
+ elif [ -e /etc/fedora-release ]; then
+     DISTRIB_ID="fedora"
++elif [ -e /etc/openEuler-release ]; then
++    DISTRIB_ID="openeuler"
+ elif [ -e /etc/gentoo-release ]; then
+     DISTRIB_ID="gentoo"
+ elif [ -e /etc/redhat-release ]; then
+@@ -315,7 +317,7 @@
+ 	    ebegin "Starting ${TS_PACKAGE_NAME}"
+ 	    do_start
+ 	    eend $?
+-        elif [ "$DISTRIB_ID" = "fedora" -o "$DISTRIB_ID" = "redhat" ]; then
++        elif [ "$DISTRIB_ID" = "fedora" -o "$DISTRIB_ID" = "redhat" -o "$DISTRIB_ID" = "openeuler" ]; then
+             action "Starting ${TS_PACKAGE_NAME}:" forkdaemon $TM_DAEMON $TM_DAEMON_ARGS
+         elif [ "$DISTRIB_ID" = "suse" ]; then
+             echo -n "Starting ${TS_PACKAGE_NAME}"
+@@ -345,7 +347,7 @@
+             test "$?" -ne 0 -a "$?" -ne 1 && retval=1
+             test "x$VERBOSE" != "xno" && log_end_msg "$retval"
+             exit "$retval"
+-        elif [ "$DISTRIB_ID" = "fedora" -o "$DISTRIB_ID" = "redhat" ]; then
++        elif [ "$DISTRIB_ID" = "fedora" -o "$DISTRIB_ID" = "redhat" -o "$DISTRIB_ID" = "openeuler" ]; then
+             action "Stopping ${TM_NAME}:" killproc -p $TM_PIDFILE -d 35 $TM_DAEMON
+             action "Stopping ${TS_NAME}:" killproc -p $TS_PIDFILE -d 35 $TS_DAEMON
+         elif [ "$DISTRIB_ID" = "gentoo" ]; then
+@@ -394,7 +396,7 @@
+             test "$?" -ne 0 -a "$?" -ne 1 && retval=1
+             test "x$VERBOSE" != "xno" && log_end_msg "$retval"
+             exit "$retval"
+-        elif [ "$DISTRIB_ID" = "fedora" -o "$DISTRIB_ID" = "redhat" ]; then
++        elif [ "$DISTRIB_ID" = "fedora" -o "$DISTRIB_ID" = "redhat" -o "$DISTRIB_ID" = "openeuler" ]; then
+             action "Reloading ${NAME}:" $TL_BINARY config reload
+         elif [ "$DISTRIB_ID" = "gentoo" ]; then
+ 	    ebegin "Reloading ${NAME}"
+@@ -446,7 +448,7 @@
+         fi
+         ;;
+     status)
+-        if [ "$DISTRIB_ID" = "fedora" -o "$DISTRIB_ID" = "redhat" ]; then
++        if [ "$DISTRIB_ID" = "fedora" -o "$DISTRIB_ID" = "redhat" -o "$DISTRIB_ID" = "openeuler" ]; then
+             status -p $TM_PIDFILE $TM_NAME
+         elif [ "$DISTRIB_ID" = "ubuntu" -o "$DISTRIB_ID" = "debian" ] ; then
+             status_of_proc "$TM_DAEMON" "$TM_NAME" -p "$TM_PIDFILE" && exit 0 || exit $?
+@@ -476,7 +478,7 @@
+         fi
+         ;;
+     condrestart)
+-        if [ "$DISTRIB_ID" = "fedora" -o "$DISTRIB_ID" = "redhat" ]; then
++        if [ "$DISTRIB_ID" = "fedora" -o "$DISTRIB_ID" = "redhat" -o "$DISTRIB_ID" = "openeuler" ]; then
+             if $0 'status'
+             then
+                 sh $0 'stop'
+@@ -490,7 +492,7 @@
+     *)
+         if [ "$DISTRIB_ID" = "ubuntu" -o "$DISTRIB_ID" = "debian" ] ; then
+             echo "Usage: $SCRIPTNAME {start|stop|status|restart}" >&2
+-        elif [ "$DISTRIB_ID" = "fedora" -o "$DISTRIB_ID" = "redhat" ]; then
++        elif [ "$DISTRIB_ID" = "fedora" -o "$DISTRIB_ID" = "redhat" -o "$DISTRIB_ID" = "openeuler" ]; then
+             echo "Usage: $0 {start|stop|status|restart|condrestart}"
+         elif [ "$DISTRIB_ID" = "gentoo" ]; then
+             echo "Usage: $0 {start|stop|reload|restart|status}"
