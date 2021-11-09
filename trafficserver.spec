@@ -1,16 +1,20 @@
 %define _hardened_build 1
-%{!?release: %define release 1}
+%{!?release: %define release 2}
 Name:                trafficserver
 Version:             9.1.0
-Release:             1
+Release:             2
 Summary:             Apache Traffic Server, a reverse, forward and transparent HTTP proxy cache
 License:             Apache-2.0
 URL:                 https://trafficserver.apache.org/
 Source0:             http://www.apache.org/dist/%{name}/%{name}-%{version}.tar.bz2
 Patch0000:           Add-openeuler-support.patch
+Patch0001:           CVE-2021-37147.patch
+Patch0002:           CVE-2021-37149.patch
+Patch0003:           CVE-2021-41585.patch
+Patch0004:           CVE-2021-43082.patch
 BuildRequires:       expat-devel hwloc-devel openssl-devel pcre-devel zlib-devel xz-devel
 BuildRequires:       libcurl-devel ncurses-devel gcc gcc-c++ perl-ExtUtils-MakeMaker
-BuildRequires:       libcap-devel cmake libunwind-devel
+BuildRequires:       libcap-devel cmake libunwind-devel automake
 Requires:            expat hwloc openssl pcre zlib xz libcurl
 Requires:            systemd ncurses pkgconfig libcap initscripts
 Requires(postun): systemd
@@ -110,5 +114,8 @@ getent passwd ats >/dev/null || useradd -r -u 176 -g ats -d / -s /sbin/nologin -
 %{_datadir}/pkgconfig/trafficserver.pc
 
 %changelog
+* Mon Nov 08 2021 wangkai <wangkai385@huawei.com> - 9.1.0-2
+- fix CVE-2021-37147 CVE-2021-37149 CVE-2021-41585 CVE-2021-43082
+
 * Tue Aug 31 2021 liyanan <liyanan32@huawei.com> - 9.1.0-1
 - package init
