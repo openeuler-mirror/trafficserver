@@ -1,0 +1,24 @@
+From 0e778106d6f88952c48966357411e16e8fa15a07 Mon Sep 17 00:00:00 2001
+From: lingsheng <lingsheng@huawei.com>
+Date: Thu, 11 Nov 2021 20:14:13 +0800
+Subject: [PATCH] Fix status failure after stopping service
+
+---
+ rc/trafficserver.service.in | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/rc/trafficserver.service.in b/rc/trafficserver.service.in
+index 7aab848..0266825 100644
+--- a/rc/trafficserver.service.in
++++ b/rc/trafficserver.service.in
+@@ -33,6 +33,7 @@ ExecStopPost=/bin/sh -c ' \
+ TimeoutStopSec=5s
+ ExecReload=@exp_bindir@/traffic_ctl config reload
+ KillMode=process
++SuccessExitStatus=15
+ 
+ [Install]
+ WantedBy=multi-user.target
+-- 
+2.23.0
+
