@@ -2,7 +2,7 @@
 %{!?release: %define release 2}
 Name:                trafficserver
 Version:             9.1.0
-Release:             2
+Release:             3
 Summary:             Apache Traffic Server, a reverse, forward and transparent HTTP proxy cache
 License:             Apache-2.0
 URL:                 https://trafficserver.apache.org/
@@ -12,6 +12,7 @@ Patch0001:           CVE-2021-37147.patch
 Patch0002:           CVE-2021-37149.patch
 Patch0003:           CVE-2021-41585.patch
 Patch0004:           CVE-2021-43082.patch
+Patch0005:           Fix-status-failure-after-stopping-service.patch
 BuildRequires:       expat-devel hwloc-devel openssl-devel pcre-devel zlib-devel xz-devel
 BuildRequires:       libcurl-devel ncurses-devel gcc gcc-c++ perl-ExtUtils-MakeMaker
 BuildRequires:       libcap-devel cmake libunwind-devel automake
@@ -65,6 +66,7 @@ mv %{buildroot}/usr/lib/perl5/* %{buildroot}%{_datadir}/perl5
 mkdir -p %{buildroot}/run/trafficserver
 mkdir -p %{buildroot}%{_datadir}/pkgconfig
 mv %{buildroot}%{_libdir}/trafficserver/pkgconfig/trafficserver.pc %{buildroot}%{_datadir}/pkgconfig
+rm -f %{buildroot}%{_bindir}/trafficserver
 
 %post
 /sbin/ldconfig
@@ -87,7 +89,7 @@ getent passwd ats >/dev/null || useradd -r -u 176 -g ats -d / -s /sbin/nologin -
 %license LICENSE
 %doc README CHANGELOG* NOTICE STATUS
 %config(noreplace) /etc/trafficserver/*
-%{_bindir}/traffic*
+%{_bindir}/traffic_*
 %{_bindir}/tspush
 %dir %{_libdir}/trafficserver
 %dir %{_libdir}/trafficserver/plugins
@@ -114,6 +116,9 @@ getent passwd ats >/dev/null || useradd -r -u 176 -g ats -d / -s /sbin/nologin -
 %{_datadir}/pkgconfig/trafficserver.pc
 
 %changelog
+* Fri Nov 12 2021 lingsheng <lingsheng@huawei.com> - 9.1.0-3
+- fix stop service fail and remove SysVinit script
+
 * Mon Nov 08 2021 wangkai <wangkai385@huawei.com> - 9.1.0-2
 - fix CVE-2021-37147 CVE-2021-37149 CVE-2021-41585 CVE-2021-43082
 
