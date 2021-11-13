@@ -1,0 +1,26 @@
+From a1bc9ba4cf0659c9053a4e52befa95e979801e41 Mon Sep 17 00:00:00 2001
+From: caodongxia <315816521@qq.com>
+Date: Sat, 13 Nov 2021 14:56:32 +0800
+Subject: [PATCH] fix log in debug mode
+
+
+diff --git a/src/traffic_crashlog/traffic_crashlog.cc b/src/traffic_crashlog/traffic_crashlog.cc
+index 936ccef..124c078 100644
+--- a/src/traffic_crashlog/traffic_crashlog.cc
++++ b/src/traffic_crashlog/traffic_crashlog.cc
+@@ -260,8 +260,10 @@ main(int /* argc ATS_UNUSED */, const char **argv)
+ 
+   fprintf(fp, "\n");
+   crashlog_write_records(fp, target);
+-
+-  Error("wrote crash log to %s", logname);
++  
++  if (!debug_mode) {
++    Note("wrote crash log to %s", logname);
++  }
+ 
+   ats_free(logname);
+ 
+-- 
+2.27.0
+
