@@ -2,7 +2,7 @@
 %{!?release: %define release 2}
 Name:                trafficserver
 Version:             9.1.0
-Release:             3
+Release:             4
 Summary:             Apache Traffic Server, a reverse, forward and transparent HTTP proxy cache
 License:             Apache-2.0
 URL:                 https://trafficserver.apache.org/
@@ -13,6 +13,7 @@ Patch0002:           CVE-2021-37149.patch
 Patch0003:           CVE-2021-41585.patch
 Patch0004:           CVE-2021-43082.patch
 Patch0005:           Fix-status-failure-after-stopping-service.patch
+Patch0006:           Fix-log-in-debug-mode.patch    
 BuildRequires:       expat-devel hwloc-devel openssl-devel pcre-devel zlib-devel xz-devel
 BuildRequires:       libcurl-devel ncurses-devel gcc gcc-c++ perl-ExtUtils-MakeMaker
 BuildRequires:       libcap-devel cmake libunwind-devel automake
@@ -116,6 +117,9 @@ getent passwd ats >/dev/null || useradd -r -u 176 -g ats -d / -s /sbin/nologin -
 %{_datadir}/pkgconfig/trafficserver.pc
 
 %changelog
+* Sat Nov 13 2021 caodongxia <caodongxia@huawei.com> - 9.1.0-4
+- fix log in debug mode
+
 * Fri Nov 12 2021 lingsheng <lingsheng@huawei.com> - 9.1.0-3
 - fix stop service fail and remove SysVinit script
 
