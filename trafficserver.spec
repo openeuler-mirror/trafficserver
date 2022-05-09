@@ -2,7 +2,7 @@
 %{!?release: %define release 2}
 Name:                trafficserver
 Version:             9.1.0
-Release:             4
+Release:             5
 Summary:             Apache Traffic Server, a reverse, forward and transparent HTTP proxy cache
 License:             Apache-2.0
 URL:                 https://trafficserver.apache.org/
@@ -13,7 +13,8 @@ Patch0002:           CVE-2021-37149.patch
 Patch0003:           CVE-2021-41585.patch
 Patch0004:           CVE-2021-43082.patch
 Patch0005:           Fix-status-failure-after-stopping-service.patch
-Patch0006:           Fix-log-in-debug-mode.patch    
+Patch0006:           Fix-log-in-debug-mode.patch
+Patch0007:           Fix-traffic_top-build-when-using-Werror-format-security.patch
 BuildRequires:       expat-devel hwloc-devel openssl-devel pcre-devel zlib-devel xz-devel
 BuildRequires:       libcurl-devel ncurses-devel gcc gcc-c++ perl-ExtUtils-MakeMaker
 BuildRequires:       libcap-devel cmake libunwind-devel automake
@@ -40,6 +41,7 @@ This package contains some Perl APIs for talking to the ATS management port.
 %autosetup -n %{name}-%{version} -p1
 
 %build
+autoreconf
 %configure \
   --enable-layout=Gentoo \
   --libdir=%{_libdir}/trafficserver \
@@ -117,6 +119,9 @@ getent passwd ats >/dev/null || useradd -r -u 176 -g ats -d / -s /sbin/nologin -
 %{_datadir}/pkgconfig/trafficserver.pc
 
 %changelog
+* Mon May 09 2022 wulei <wulei80@h-partners.com> - 9.1.0-5
+- Fix traffic_top build when using -Werror=format-security
+
 * Sat Nov 13 2021 caodongxia <caodongxia@huawei.com> - 9.1.0-4
 - fix log in debug mode
 

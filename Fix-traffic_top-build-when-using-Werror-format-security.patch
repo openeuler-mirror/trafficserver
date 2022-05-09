@@ -1,0 +1,35 @@
+From 7a93f208f32889ca5eb285dda87a4912fa30886a Mon Sep 17 00:00:00 2001
+From: Jean-Baptiste Favre <jean-baptiste.favre@blablacar.com>
+Date: Tue, 19 Oct 2021 08:42:04 +0200
+Subject: [PATCH] Fix traffic_top build when using -Werror=format-security
+Reference: https://github.com/apache/trafficserver/pull/8437
+
+---
+ src/traffic_top/traffic_top.cc | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/src/traffic_top/traffic_top.cc b/src/traffic_top/traffic_top.cc
+index d33d682..2ac6b2a 100644
+--- a/src/traffic_top/traffic_top.cc
++++ b/src/traffic_top/traffic_top.cc
+@@ -126,7 +126,7 @@ prettyPrint(const int x, const int y, const double number, const int type)
+   }
+   attron(COLOR_PAIR(color));
+   attron(A_BOLD);
+-  mvprintw(y, x, buffer);
++  mvprintw(y, x, "%s", buffer);
+   attroff(COLOR_PAIR(color));
+   attroff(A_BOLD);
+ }
+@@ -143,7 +143,7 @@ makeTable(const int x, const int y, const list<string> &items, Stats &stats)
+     int type;
+ 
+     stats.getStat(item, value, prettyName, type);
+-    mvprintw(my_y, x, prettyName.c_str());
++    mvprintw(my_y, x, "%s", prettyName.c_str());
+     prettyPrint(x + 10, my_y++, value, type);
+   }
+ }
+-- 
+2.27.0
+
