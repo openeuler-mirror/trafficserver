@@ -1,19 +1,14 @@
 %define _hardened_build 1
-%{!?release: %define release 2}
 Name:                trafficserver
-Version:             9.1.0
-Release:             4
+Version:             9.1.2
+Release:             1
 Summary:             Apache Traffic Server, a reverse, forward and transparent HTTP proxy cache
 License:             Apache-2.0
 URL:                 https://trafficserver.apache.org/
 Source0:             http://www.apache.org/dist/%{name}/%{name}-%{version}.tar.bz2
 Patch0000:           Add-openeuler-support.patch
-Patch0001:           CVE-2021-37147.patch
-Patch0002:           CVE-2021-37149.patch
-Patch0003:           CVE-2021-41585.patch
-Patch0004:           CVE-2021-43082.patch
-Patch0005:           Fix-status-failure-after-stopping-service.patch
-Patch0006:           Fix-log-in-debug-mode.patch    
+Patch0001:           Fix-status-failure-after-stopping-service.patch
+Patch0002:           Fix-log-in-debug-mode.patch    
 BuildRequires:       expat-devel hwloc-devel openssl-devel pcre-devel zlib-devel xz-devel
 BuildRequires:       libcurl-devel ncurses-devel gcc gcc-c++ perl-ExtUtils-MakeMaker
 BuildRequires:       libcap-devel cmake libunwind-devel automake
@@ -117,6 +112,9 @@ getent passwd ats >/dev/null || useradd -r -u 176 -g ats -d / -s /sbin/nologin -
 %{_datadir}/pkgconfig/trafficserver.pc
 
 %changelog
+* Thu May 19 2022 wangkai <wangkai385@h-partners.com> - 9.1.2-1
+- Update to 9.1.2 for fix CVE-2021-44040
+
 * Sat Nov 13 2021 caodongxia <caodongxia@huawei.com> - 9.1.0-4
 - fix log in debug mode
 
