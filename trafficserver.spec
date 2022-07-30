@@ -1,7 +1,7 @@
 %define _hardened_build 1
 Name:                trafficserver
 Version:             9.1.2
-Release:             1
+Release:             2
 Summary:             Apache Traffic Server, a reverse, forward and transparent HTTP proxy cache
 License:             Apache-2.0
 URL:                 https://trafficserver.apache.org/
@@ -67,18 +67,27 @@ rm -f %{buildroot}%{_bindir}/trafficserver
 
 %post
 /sbin/ldconfig
-%systemd_post trafficserver.service
+if [ $1 -eq 1 ] && [ -x /usr/bin/systemctl ]; then
+    # Initial installation
+    /usr/bin/systemctl --no-reload preset trafficserver.service || :
+fi
 
 %pre
 getent group ats >/dev/null || groupadd -r ats -g 176 &>/dev/null
 getent passwd ats >/dev/null || useradd -r -u 176 -g ats -d / -s /sbin/nologin -c "Apache Traffic Server" ats &>/dev/null
 
 %preun
-%systemd_preun trafficserver.service
+if [ $1 -eq 0 ] && [ -x /usr/bin/systemctl ]; then
+    # Package removal, not upgrade
+    /usr/bin/systemctl --no-reload disable --now trafficserver.service || :
+fi
 
 %postun
 /sbin/ldconfig
-%systemd_postun_with_restart trafficserver.service
+if [ $1 -ge 1 ] && [ -x /usr/bin/systemctl ]; then
+    # Package upgrade, not uninstall
+    /usr/bin/systemctl try-restart trafficserver.service || :
+fi
 
 %files
 %defattr(-, root, root, -)
@@ -113,6 +122,9 @@ getent passwd ats >/dev/null || useradd -r -u 176 -g ats -d / -s /sbin/nologin -
 %{_datadir}/pkgconfig/trafficserver.pc
 
 %changelog
+* Sat Jul 30 2022 Ge Wang <wangge20@h-partners.com> - 9.1.2-2
+- Modify scriptlet
+
 * Thu May 19 2022 wangkai <wangkai385@h-partners.com> - 9.1.2-1
 - Update to 9.1.2 fox fix CVE-2021-44040
 
