@@ -1,7 +1,7 @@
 %define _hardened_build 1
 Name:                trafficserver
-Version:             9.1.2
-Release:             2
+Version:             9.1.3
+Release:             1
 Summary:             Apache Traffic Server, a reverse, forward and transparent HTTP proxy cache
 License:             Apache-2.0
 URL:                 https://trafficserver.apache.org/
@@ -122,6 +122,9 @@ fi
 %{_datadir}/pkgconfig/trafficserver.pc
 
 %changelog
+* Thu Aug 22 2022 panyanshuang <panyanshuang@ncti-gba.cn> - 9.1.3-1
+- Upgrade to 9.1.3 to  fix CVE-2022-31779
+
 * Sat Jul 30 2022 Ge Wang <wangge20@h-partners.com> - 9.1.2-2
 - Modify scriptlet
 
