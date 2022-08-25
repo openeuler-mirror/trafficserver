@@ -1,7 +1,7 @@
 %define _hardened_build 1
 Name:                trafficserver
 Version:             9.1.3
-Release:             1
+Release:             2
 Summary:             Apache Traffic Server, a reverse, forward and transparent HTTP proxy cache
 License:             Apache-2.0
 URL:                 https://trafficserver.apache.org/
@@ -11,7 +11,7 @@ Patch0001:           Fix-status-failure-after-stopping-service.patch
 Patch0002:           Fix-log-in-debug-mode.patch
 BuildRequires:       expat-devel hwloc-devel openssl-devel pcre-devel zlib-devel xz-devel
 BuildRequires:       libcurl-devel ncurses-devel gcc gcc-c++ perl-ExtUtils-MakeMaker
-BuildRequires:       libcap-devel cmake libunwind-devel automake
+BuildRequires:       libcap-devel cmake libunwind-devel automake chrpath
 Requires:            expat hwloc openssl pcre zlib xz libcurl
 Requires:            systemd ncurses pkgconfig libcap initscripts
 Requires(postun): systemd
@@ -65,6 +65,16 @@ mkdir -p %{buildroot}%{_datadir}/pkgconfig
 mv %{buildroot}%{_libdir}/trafficserver/pkgconfig/trafficserver.pc %{buildroot}%{_datadir}/pkgconfig
 rm -f %{buildroot}%{_bindir}/trafficserver
 
+file `find %{buildroot}/%{_bindir} -type f` | grep -w ELF | awk -F: '{print $1}' | xargs chrpath -d
+chrpath -d  %{buildroot}/%{_libdir}/trafficserver/libtsmgmt.so.9.1.3
+chrpath -d  %{buildroot}/%{_libdir}/trafficserver/libtscore.so.9.1.3
+chrpath -d  %{buildroot}/%{_libdir}/trafficserver/plugins/server_push_preload.so
+chrpath -d  %{buildroot}/%{_libdir}/trafficserver/plugins/redo_cache_lookup.so
+
+mkdir -p %{buildroot}/etc/ld.so.conf.d
+
+echo "/usr/lib64/trafficserver" > %{buildroot}/etc/ld.so.conf.d/%{name}-%{_arch}.conf
+
 %post
 /sbin/ldconfig
 if [ $1 -eq 1 ] && [ -x /usr/bin/systemctl ]; then
@@ -108,6 +118,7 @@ fi
 %attr(0755, ats, ats) %dir /var/cache/trafficserver
 %attr(0644, ats, ats) /etc/trafficserver/*.config
 %attr(0644, ats, ats) /etc/trafficserver/*.yaml
+%config(noreplace) /etc/ld.so.conf.d/*
 
 %files perl
 %defattr(-,root,root,-)
@@ -122,6 +133,9 @@ fi
 %{_datadir}/pkgconfig/trafficserver.pc
 
 %changelog
+* Thu Aug 25 2022 liyanan <liyanan32@h-partners.com> - 9.1.3-2
+- fix rpath problem
+
 * Thu Aug 22 2022 panyanshuang <panyanshuang@ncti-gba.cn> - 9.1.3-1
 - Upgrade to 9.1.3 to  fix CVE-2022-31779
 
