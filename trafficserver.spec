@@ -1,7 +1,7 @@
 %define _hardened_build 1
 Name:                trafficserver
 Version:             9.1.3
-Release:             2
+Release:             3
 Summary:             Apache Traffic Server, a reverse, forward and transparent HTTP proxy cache
 License:             Apache-2.0
 URL:                 https://trafficserver.apache.org/
@@ -9,6 +9,7 @@ Source0:             http://www.apache.org/dist/%{name}/%{name}-%{version}.tar.b
 Patch0000:           Add-openeuler-support.patch
 Patch0001:           Fix-status-failure-after-stopping-service.patch
 Patch0002:           Fix-log-in-debug-mode.patch
+Patch0003:           config-layout-openEuler.patch
 BuildRequires:       expat-devel hwloc-devel openssl-devel pcre-devel zlib-devel xz-devel
 BuildRequires:       libcurl-devel ncurses-devel gcc gcc-c++ perl-ExtUtils-MakeMaker
 BuildRequires:       libcap-devel cmake libunwind-devel automake chrpath
@@ -36,14 +37,12 @@ This package contains some Perl APIs for talking to the ATS management port.
 
 %build
 autoreconf
-%configure \
-  --enable-layout=Gentoo \
+./configure \
+  --enable-layout=openEuler \
   --libdir=%{_libdir}/trafficserver \
   --libexecdir=%{_libdir}/trafficserver/plugins \
-  --sysconfdir=%{_sysconfdir}/trafficserver \
   --enable-experimental-plugins \
   --with-user=ats --with-group=ats \
-  %{DISABLE_UNWIND} \
   --disable-silent-rules
 make %{?_smp_mflags} V=1
 
@@ -104,7 +103,7 @@ fi
 %{!?_licensedir:%global license %%doc}
 %license LICENSE
 %doc README CHANGELOG* NOTICE STATUS
-%config(noreplace) /etc/trafficserver/*
+%config(noreplace) /usr/etc/trafficserver/*
 %{_bindir}/traffic_*
 %{_bindir}/tspush
 %dir %{_libdir}/trafficserver
@@ -112,12 +111,9 @@ fi
 %{_libdir}/trafficserver/libts*.so*
 %{_libdir}/trafficserver/plugins/*.so
 /lib/systemd/system/trafficserver.service
-%attr(0755, ats, ats) %dir /etc/trafficserver
-%attr(0755, ats, ats) %dir /var/log/trafficserver
-%attr(0755, ats, ats) %dir /run/trafficserver
-%attr(0755, ats, ats) %dir /var/cache/trafficserver
-%attr(0644, ats, ats) /etc/trafficserver/*.config
-%attr(0644, ats, ats) /etc/trafficserver/*.yaml
+%attr(0755, ats, ats) %dir /usr/etc/trafficserver
+%attr(0644, ats, ats) /usr/etc/trafficserver/*.config
+%attr(0644, ats, ats) /usr/etc/trafficserver/*.yaml
 %config(noreplace) /etc/ld.so.conf.d/*
 
 %files perl
@@ -133,10 +129,13 @@ fi
 %{_datadir}/pkgconfig/trafficserver.pc
 
 %changelog
+* Tue Aug 30 2022 wangkai <wangkai385@h-partners.com> - 9.1.3-3
+- Fix traffic_layout remove core dumped
+
 * Thu Aug 25 2022 liyanan <liyanan32@h-partners.com> - 9.1.3-2
 - fix rpath problem
 
-* Thu Aug 22 2022 panyanshuang <panyanshuang@ncti-gba.cn> - 9.1.3-1
+* Mon Aug 22 2022 panyanshuang <panyanshuang@ncti-gba.cn> - 9.1.3-1
 - Upgrade to 9.1.3 to  fix CVE-2022-31779
 
 * Sat Jul 30 2022 Ge Wang <wangge20@h-partners.com> - 9.1.2-2
