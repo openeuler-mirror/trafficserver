@@ -1,7 +1,7 @@
 %define _hardened_build 1
 Name:                trafficserver
 Version:             9.1.3
-Release:             2
+Release:             3
 Summary:             Apache Traffic Server, a reverse, forward and transparent HTTP proxy cache
 License:             Apache-2.0
 URL:                 https://trafficserver.apache.org/
@@ -93,6 +93,9 @@ getent passwd ats >/dev/null || useradd -r -u 176 -g ats -d / -s /sbin/nologin -
 %{_libdir}/trafficserver/plugins/*.so
 /lib/systemd/system/trafficserver.service
 %attr(0755, ats, ats) %dir /usr/etc/trafficserver
+%attr(0755, ats, ats) %dir /usr/var/trafficserver/log
+%attr(0755, ats, ats) %dir /usr/var/trafficserver/run
+%attr(0755, ats, ats) %dir /usr/var/trafficserver/cache
 %attr(0644, ats, ats) /usr/etc/trafficserver/*.config
 %attr(0644, ats, ats) /usr/etc/trafficserver/*.yaml
 
@@ -109,6 +112,9 @@ getent passwd ats >/dev/null || useradd -r -u 176 -g ats -d / -s /sbin/nologin -
 %{_datadir}/pkgconfig/trafficserver.pc
 
 %changelog
+* Wed Sep 07 2022 wangkai <wangkai385@h-partners.com> - 9.1.3-3
+- Add log,run,cache dir
+
 * Tue Aug 30 2022 wangkai <wangkai385@h-partners.com> - 9.1.3-2
 - Fix traffic_layout remove core dumped
 
