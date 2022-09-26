@@ -1,7 +1,7 @@
 %define _hardened_build 1
 Name:                trafficserver
 Version:             9.1.3
-Release:             3
+Release:             4
 Summary:             Apache Traffic Server, a reverse, forward and transparent HTTP proxy cache
 License:             Apache-2.0
 URL:                 https://trafficserver.apache.org/
@@ -10,6 +10,7 @@ Patch0000:           Add-openeuler-support.patch
 Patch0001:           Fix-status-failure-after-stopping-service.patch
 Patch0002:           Fix-log-in-debug-mode.patch
 Patch0003:           config-layout-openEuler.patch
+Patch0004:           Modify-storage.config-for-traffic_cache_tool.patch
 BuildRequires:       expat-devel hwloc-devel openssl-devel pcre-devel zlib-devel xz-devel
 BuildRequires:       libcurl-devel ncurses-devel gcc gcc-c++ perl-ExtUtils-MakeMaker
 BuildRequires:       libcap-devel cmake libunwind-devel automake
@@ -112,6 +113,9 @@ getent passwd ats >/dev/null || useradd -r -u 176 -g ats -d / -s /sbin/nologin -
 %{_datadir}/pkgconfig/trafficserver.pc
 
 %changelog
+* Mon Sep 26 2022 wangkai <wangkai385@h-partners.com> - 9.1.3-4
+- Modify storage.config for traffic_cache_tool
+
 * Wed Sep 07 2022 wangkai <wangkai385@h-partners.com> - 9.1.3-3
 - Add log,run,cache dir
 
