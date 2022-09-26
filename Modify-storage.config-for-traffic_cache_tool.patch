@@ -1,0 +1,26 @@
+From c12d4f5a9d9e3858d4b668ffc37240b160260d5f Mon Sep 17 00:00:00 2001
+From: wk333 <13474090681@163.com>
+Date: Mon, 26 Sep 2022 09:33:45 +0800
+Subject: [PATCH 1/1] Modify storage.config for traffic_cache_tool
+
+---
+ configs/storage.config.default.in | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/configs/storage.config.default.in b/configs/storage.config.default.in
+index 0bd9384..0c56d83 100644
+--- a/configs/storage.config.default.in
++++ b/configs/storage.config.default.in
+@@ -27,7 +27,8 @@
+ #          assuming prefix of '@prefix@'
+ #      @rel_cachedir@ 512M
+ #
+-#
++# Note: The traffic_cache_tool command does not support directories
++# Refer: https://github.com/apache/trafficserver/issue/5168
+ #############################################################
+ ##              O_DIRECT Specific Configuration            ##
+ #############################################################
+-- 
+2.27.0
+
