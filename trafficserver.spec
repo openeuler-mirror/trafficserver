@@ -1,7 +1,7 @@
 %define _hardened_build 1
 Name:                trafficserver
 Version:             9.1.4
-Release:             1
+Release:             2
 Summary:             Apache Traffic Server, a reverse, forward and transparent HTTP proxy cache
 License:             Apache-2.0
 URL:                 https://trafficserver.apache.org/
@@ -13,7 +13,7 @@ Patch0003:           config-layout-openEuler.patch
 Patch0004:           Modify-storage.config-for-traffic_cache_tool.patch
 BuildRequires:       expat-devel hwloc-devel openssl-devel pcre-devel zlib-devel xz-devel
 BuildRequires:       libcurl-devel ncurses-devel gcc gcc-c++ perl-ExtUtils-MakeMaker
-BuildRequires:       libcap-devel cmake libunwind-devel automake
+BuildRequires:       libcap-devel cmake libunwind-devel automake chrpath
 Requires:            expat hwloc openssl pcre zlib xz libcurl
 Requires:            systemd ncurses pkgconfig libcap initscripts
 Requires(postun): systemd
@@ -65,6 +65,23 @@ mkdir -p %{buildroot}%{_datadir}/pkgconfig
 mv %{buildroot}%{_libdir}/trafficserver/pkgconfig/trafficserver.pc %{buildroot}%{_datadir}/pkgconfig
 rm -f %{buildroot}%{_bindir}/trafficserver
 
+chrpath -d %{buildroot}%{_bindir}/traffic_crashlog
+chrpath -d %{buildroot}%{_bindir}/traffic_ctl
+chrpath -d %{buildroot}%{_bindir}/traffic_layout
+chrpath -d %{buildroot}%{_bindir}/traffic_logcat
+chrpath -d %{buildroot}%{_bindir}/traffic_logstats
+chrpath -d %{buildroot}%{_bindir}/traffic_manager
+chrpath -d %{buildroot}%{_bindir}/traffic_server
+chrpath -d %{buildroot}%{_bindir}/traffic_top
+chrpath -d %{buildroot}%{_bindir}/traffic_via
+chrpath -d %{buildroot}%{_libdir}/trafficserver/libtscore.so.%{version}
+chrpath -d %{buildroot}%{_libdir}/trafficserver/libtsmgmt.so.%{version}
+chrpath -d %{buildroot}%{_libdir}/trafficserver/plugins/server_push_preload.so
+chrpath -d %{buildroot}%{_libdir}/trafficserver/plugins/redo_cache_lookup.so
+
+mkdir -p %{buildroot}/etc/ld.so.conf.d
+echo "%{_libdir}/%{name}" > %{buildroot}/etc/ld.so.conf.d/%{name}-%{_arch}.conf
+
 %post
 /sbin/ldconfig
 %systemd_post trafficserver.service
@@ -99,6 +116,7 @@ getent passwd ats >/dev/null || useradd -r -u 176 -g ats -d / -s /sbin/nologin -
 %attr(0755, ats, ats) %dir /usr/var/trafficserver/cache
 %attr(0644, ats, ats) /usr/etc/trafficserver/*.config
 %attr(0644, ats, ats) /usr/etc/trafficserver/*.yaml
+/etc/ld.so.conf.d/%{name}-%{_arch}.conf
 
 %files perl
 %defattr(-,root,root,-)
@@ -113,6 +131,9 @@ getent passwd ats >/dev/null || useradd -r -u 176 -g ats -d / -s /sbin/nologin -
 %{_datadir}/pkgconfig/trafficserver.pc
 
 %changelog
+* Fri Mar 03 2023 Ge Wang <wangge20@h-partners.com> - 9.1.4-2
+- Remove rpath
+
 * Tue Dec 27 2022 jiangpeng <jiangpeng01@ncti-gba.cn> - 9.1.4-1
 - Update to 9.1.4 to fix CVE-2022-37392 and CVE-2022-32749 and CVE-2022-40743
 
