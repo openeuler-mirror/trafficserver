@@ -1,7 +1,7 @@
 %define _hardened_build 1
 Name:                trafficserver
 Version:             9.1.4
-Release:             2
+Release:             3
 Summary:             Apache Traffic Server, a reverse, forward and transparent HTTP proxy cache
 License:             Apache-2.0
 URL:                 https://trafficserver.apache.org/
@@ -44,7 +44,7 @@ autoreconf
   --libexecdir=%{_libdir}/trafficserver/plugins \
   --enable-experimental-plugins \
   --with-user=ats --with-group=ats \
-  --disable-silent-rules
+  --disable-silent-rules --enable-hardening=yes
 make %{?_smp_mflags} V=1
 
 %install
@@ -131,6 +131,9 @@ getent passwd ats >/dev/null || useradd -r -u 176 -g ats -d / -s /sbin/nologin -
 %{_datadir}/pkgconfig/trafficserver.pc
 
 %changelog
+* Wed Mar 29 2023 Ge Wang <wangge20@h-partners.com> - 9.1.4-3
+- Add PIE compile and link flag
+
 * Fri Mar 03 2023 Ge Wang <wangge20@h-partners.com> - 9.1.4-2
 - Remove rpath
 
