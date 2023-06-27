@@ -1,7 +1,7 @@
 %define _hardened_build 1
 Name:                trafficserver
 Version:             9.1.4
-Release:             3
+Release:             4
 Summary:             Apache Traffic Server, a reverse, forward and transparent HTTP proxy cache
 License:             Apache-2.0
 URL:                 https://trafficserver.apache.org/
@@ -37,6 +37,9 @@ This package contains some Perl APIs for talking to the ATS management port.
 %autosetup -n %{name}-%{version} -p1
 
 %build
+%if "%toolchain" == "clang"
+	export LDFLAGS="$LDFLAGS -llzma"
+%endif
 autoreconf
 ./configure \
   --enable-layout=openEuler \
@@ -131,6 +134,9 @@ getent passwd ats >/dev/null || useradd -r -u 176 -g ats -d / -s /sbin/nologin -
 %{_datadir}/pkgconfig/trafficserver.pc
 
 %changelog
+* Tue Jun 27 2023 yoo <sunyuechi@iscas.ac.cn> - 9.1.4-4
+- fix clang build error
+
 * Wed Mar 29 2023 Ge Wang <wangge20@h-partners.com> - 9.1.4-3
 - Add PIE compile and link flag
 
