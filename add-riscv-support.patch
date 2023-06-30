@@ -1,0 +1,25 @@
+diff -ur trafficserver-9.1.4/build/_aux/config.guess trafficserver-9.1.4/build/_aux/config.guess
+--- trafficserver-9.1.4/build/_aux/config.guess	2022-12-15 00:12:58.000000000 +0800
++++ trafficserver-9.1.4/build/_aux/config.guess	2023-06-29 22:17:30.463222251 +0800
+@@ -972,6 +972,9 @@
+     aarch64:Linux:*:*)
+ 	GUESS=$UNAME_MACHINE-unknown-linux-$LIBC
+ 	;;
++	riscv64:Linux:*:*)
++	GUESS=$UNAME_MACHINE-unknown-linux-$LIBC
++	;;
+     aarch64_be:Linux:*:*)
+ 	UNAME_MACHINE=aarch64_be
+ 	GUESS=$UNAME_MACHINE-unknown-linux-$LIBC
+diff -ur trafficserver-9.1.4/include/tscore/ink_queue.h trafficserver-9.1.4/include/tscore/ink_queue.h
+--- trafficserver-9.1.4/include/tscore/ink_queue.h	2022-12-15 00:12:58.000000000 +0800
++++ trafficserver-9.1.4/include/tscore/ink_queue.h	2023-06-29 22:17:33.107226277 +0800
+@@ -139,7 +139,7 @@
+ #define SET_FREELIST_POINTER_VERSION(_x, _p, _v) \
+   (_x).s.pointer = _p;                           \
+   (_x).s.version = _v
+-#elif defined(__x86_64__) || defined(__ia64__) || defined(__powerpc64__) || defined(__aarch64__) || defined(__mips64)
++#elif defined(__x86_64__) || defined(__ia64__) || defined(__powerpc64__) || defined(__aarch64__) || defined(__mips64)|| defined(__riscv)
+ /* Layout of FREELIST_POINTER
+  *
+  *  0 ~ 47 bits : 48 bits, Virtual Address (47 bits for AMD64 and 48 bits for AArch64)
