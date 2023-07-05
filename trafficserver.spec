@@ -1,7 +1,7 @@
 %define _hardened_build 1
 Name:                trafficserver
 Version:             9.1.4
-Release:             4
+Release:             5
 Summary:             Apache Traffic Server, a reverse, forward and transparent HTTP proxy cache
 License:             Apache-2.0
 URL:                 https://trafficserver.apache.org/
@@ -11,6 +11,7 @@ Patch0001:           Fix-status-failure-after-stopping-service.patch
 Patch0002:           Fix-log-in-debug-mode.patch
 Patch0003:           config-layout-openEuler.patch
 Patch0004:           Modify-storage.config-for-traffic_cache_tool.patch
+Patch0005:           add-riscv-support.patch
 BuildRequires:       expat-devel hwloc-devel openssl-devel pcre-devel zlib-devel xz-devel
 BuildRequires:       libcurl-devel ncurses-devel gcc gcc-c++ perl-ExtUtils-MakeMaker
 BuildRequires:       libcap-devel cmake libunwind-devel automake chrpath
@@ -134,6 +135,9 @@ getent passwd ats >/dev/null || useradd -r -u 176 -g ats -d / -s /sbin/nologin -
 %{_datadir}/pkgconfig/trafficserver.pc
 
 %changelog
+* Fri Jun 30 2023 zhangxiang <zhangxiang@iscas.ac.cn> - 9.1.4-5
+- add riscv support
+
 * Tue Jun 27 2023 yoo <sunyuechi@iscas.ac.cn> - 9.1.4-4
 - fix clang build error
 
